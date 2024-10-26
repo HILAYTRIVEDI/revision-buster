@@ -1,0 +1,10 @@
+/* Style for the multi-select container */
+#multiselect_container {
+    display: none;
+
+}
+
+.selected-pages{
+    height: 300px !important;
+    width: 100%;
+}
