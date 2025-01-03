@@ -47,7 +47,7 @@ function revision_buster_init() {
     $rb_class_assets_instance = new Assets();
 
     $rb_class_instance = new RemoveRevisions();
-    $rb_class_instance->setup_hooks();
+    $rb_class_instance->rb_setup_hooks();
 }
 
 add_action( 'plugins_loaded', 'revision_buster_init' );

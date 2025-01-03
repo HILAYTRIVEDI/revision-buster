@@ -23,8 +23,8 @@ class RemoveRevisions {
      * Fetches all posts and sets up hooks.
      */
     public function __construct() {
-        $this->fetch_all_posts();
-        $this->setup_hooks();
+        $this->rb_fetch_all_posts();
+        $this->rb_setup_hooks();
     }
 
     /**
@@ -32,7 +32,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    private function fetch_all_posts(): void {
+    private function rb_fetch_all_posts(): void {
 
         // Get the cached posts of current site
         $cached_posts = get_transient( 'all_posts_cache' );
@@ -78,7 +78,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function invalidate_cache_on_post_update(): void {
+    public function rb_invalidate_cache_on_post_update(): void {
         delete_transient( 'all_posts_cache' );
     }
 
@@ -87,13 +87,13 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function setup_hooks(): void {
-        add_action( 'admin_menu', [ $this, 'revision_cleanup_admin_menu' ] );
-        add_action( 'run_revision_cleanup_cron', [ $this, 'run_revision_cleanup' ] );
+    public function rb_setup_hooks(): void {
+        add_action( 'admin_menu', [ $this, 'rb_revision_cleanup_admin_menu' ] );
+        add_action( 'rb_run_revision_cleanup_cron', [ $this, 'rb_run_revision_cleanup' ] );
 
         // Invalidate cache on post save or delete.
-        add_action( 'save_post', [ $this, 'invalidate_cache_on_post_update' ] );
-        add_action( 'delete_post', [ $this, 'invalidate_cache_on_post_update' ] );
+        add_action( 'save_post', [ $this, 'rb_invalidate_cache_on_post_update' ] );
+        add_action( 'delete_post', [ $this, 'rb_invalidate_cache_on_post_update' ] );
 
         // Add monthly and yearly schedule
         add_filter( 'cron_schedules', [ $this, 'rb_add_cron_interval' ] );
@@ -123,7 +123,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function revision_cleanup_admin_menu(): void {
+    public function rb_revision_cleanup_admin_menu(): void {
         add_menu_page(
             'Revision Cleanup',
             'Revision Cleanup',
@@ -166,7 +166,7 @@ class RemoveRevisions {
             update_option( 'revision_cleanup_interval', $cleanup_interval );
 
             $this->clear_scheduled_revision_cleanup();
-            wp_schedule_event( time(), $cleanup_interval, 'run_revision_cleanup_cron' );
+            wp_schedule_event( time(), $cleanup_interval, 'rb_run_revision_cleanup_cron' );
 
             echo '<div class="updated"><p>' . esc_html__( 'Settings saved!', 'revision-buster' ) . '</p></div>';
         }
@@ -293,9 +293,9 @@ class RemoveRevisions {
      * @return void
      */
     public function clear_scheduled_revision_cleanup(): void {
-        $timestamp = wp_next_scheduled( 'run_revision_cleanup_cron' );
+        $timestamp = wp_next_scheduled( 'rb_run_revision_cleanup_cron' );
         if ( $timestamp ) {
-            wp_unschedule_event( $timestamp, 'run_revision_cleanup_cron' );
+            wp_unschedule_event( $timestamp, 'rb_run_revision_cleanup_cron' );
         }
     }
 
@@ -304,7 +304,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function run_revision_cleanup(): void {
+    public function rb_run_revision_cleanup(): void {
         $selected_pages    = get_option( 'revision_cleanup_pages', [] );
         $revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
 
