@@ -17,7 +17,7 @@ class RemoveRevisions {
      *
      * @var array
      */
-    private $all_posts; // Store all posts and pages.
+    private $revision_buster_revision_buster_reall_posts; // Store all posts and pages.
 
     /**
      * Constructor.
@@ -36,41 +36,41 @@ class RemoveRevisions {
     private function revision_buster_fetch_all_posts(): void {
 
         // Get the cached posts of current site
-        $cached_posts = get_transient( 'all_posts_cache' );
+        $revision_buster_revision_buster_cached_posts = get_transient( 'revision_buster_all_posts_cache' );
         
-        if ( false === $cached_posts ) {
-            $this->all_posts = [];
-            $batch_size = 100;
-            $page = 1;
+        if ( false === $revision_buster_revision_buster_cached_posts ) {
+            $this->revision_buster_reall_posts = [];
+            $revision_buster_batch_size = 100;
+            $revision_buster_page = 1;
 
-            $query = new \WP_Query(
+            $revision_buster_query = new \WP_Query(
                 [
                     'post_type'      => [ 'post', 'page' ],
-                    'posts_per_page' => $batch_size,
-                    'paged'          => $page,
+                    'posts_per_page' => $revision_buster_batch_size,
+                    'paged'          => $revision_buster_page,
                     'fields'         => 'ids',
                 ]
             );
 
-            while ( $query->have_posts() ) {
-                $this->all_posts = array_merge( $this->all_posts, $query->posts );
+            while ( $revision_buster_query->have_posts() ) {
+                $this->revision_buster_reall_posts = array_merge( $this->revision_buster_reall_posts, $revision_buster_query->posts );
 
-                $page++;
+                $revision_buster_page++;
 
-                $query = new \WP_Query(
+                $revision_buster_query = new \WP_Query(
                     [
                         'post_type'      => [ 'post', 'page' ],
-                        'posts_per_page' => $batch_size,
-                        'paged'          => $page,
+                        'posts_per_page' => $revision_buster_batch_size,
+                        'paged'          => $revision_buster_page,
                         'fields'         => 'ids',
                     ]
                 );
             }
 
             // Cache the result for 12 hours.
-            set_transient( 'all_posts_cache' , $this->all_posts, 12 * HOUR_IN_SECONDS );
+            set_transient( 'revision_buster_all_posts_cache' , $this->revision_buster_reall_posts, 12 * HOUR_IN_SECONDS );
         } else {
-            $this->all_posts = $cached_posts;
+            $this->revision_buster_reall_posts = $revision_buster_revision_buster_cached_posts;
         }
     }
 
@@ -80,7 +80,7 @@ class RemoveRevisions {
      * @return void
      */
     public function revision_buster_invalidate_cache_on_post_update(): void {
-        delete_transient( 'all_posts_cache' );
+        delete_transient( 'revision_buster_all_posts_cache' );
     }
 
     /**
@@ -103,20 +103,20 @@ class RemoveRevisions {
     /**
      * Add monthly and yearly schedule
      * 
-     * @param array $schedules
+     * @param array $revision_buster_schedules
      * @return array
      */
-    public function revision_buster_add_cron_interval( $schedules ){
-        $schedules['monthly'] = array(
+    public function revision_buster_add_cron_interval( $revision_buster_schedules ){
+        $revision_buster_schedules['monthly'] = array(
             'interval' => 30 * DAY_IN_SECONDS,
             'display'  => esc_html__( 'Every Month' , 'revision-buster' ), 
         );
-        $schedules['yearly'] = array(
+        $revision_buster_schedules['yearly'] = array(
             'interval' => 365 * DAY_IN_SECONDS,
             'display'  => esc_html__( 'Every Year', 'revision-buster' ),
         );
 
-        return $schedules;
+        return $revision_buster_schedules;
     }
 
     /**
@@ -147,61 +147,61 @@ class RemoveRevisions {
         }
 
         // Get stored options.
-        $selected_pages    = get_option( 'revision_cleanup_pages', [] ) ?: [];
-        $revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
-        $cleanup_interval  = get_option( 'revision_cleanup_interval', 'monthly' );
+        $revision_buster_selected_pages    = get_option( 'revision_cleanup_pages', [] ) ?: [];
+        $revision_buster_revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
+        $revision_buster_cleanup_interval  = get_option( 'revision_cleanup_interval', 'monthly' );
 
-        $revision_cleanup_submit = revision_buster_filter_input( INPUT_POST, 'revision_cleanup_submit', RB_FILTER_SANITIZE_STRING );
-        $delete_all_revisions    = revision_buster_filter_input( INPUT_POST, 'delete_all_revisions', RB_FILTER_SANITIZE_STRING );
-        $delete_single_revision  = revision_buster_filter_input( INPUT_POST, 'delete_single_revision', RB_FILTER_SANITIZE_STRING );
+        $revision_buster_revision_cleanup_submit = revision_buster_filter_input( INPUT_POST, 'revision_cleanup_submit', RB_FILTER_SANITIZE_STRING );
+        $revision_buster_delete_all_revisions    = revision_buster_filter_input( INPUT_POST, 'delete_all_revisions', RB_FILTER_SANITIZE_STRING );
+        $revision_buster_delete_single_revision  = revision_buster_filter_input( INPUT_POST, 'delete_single_revision', RB_FILTER_SANITIZE_STRING );
 
         // Handle form submission.
-        if ( ! empty( $revision_cleanup_submit ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
+        if ( ! empty( $revision_buster_revision_cleanup_submit ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
             // Sanitize input fields.
-            $selected_pages    = revision_buster_filter_input( INPUT_POST, 'selected_pages', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY ) ?: [];
-            $revisions_to_keep = revision_buster_filter_input( INPUT_POST, 'revisions_to_keep', FILTER_VALIDATE_INT );
-            $cleanup_interval  = revision_buster_filter_input( INPUT_POST, 'cleanup_interval', RB_FILTER_SANITIZE_STRING );
+            $revision_buster_selected_pages    = revision_buster_filter_input( INPUT_POST, 'selected_pages', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY ) ?: [];
+            $revision_buster_revisions_to_keep = revision_buster_filter_input( INPUT_POST, 'revisions_to_keep', FILTER_VALIDATE_INT );
+            $revision_buster_cleanup_interval  = revision_buster_filter_input( INPUT_POST, 'cleanup_interval', RB_FILTER_SANITIZE_STRING );
 
-            update_option( 'revision_cleanup_pages', $selected_pages );
-            update_option( 'revision_cleanup_revisions_to_keep', absint($revisions_to_keep) );
-            update_option( 'revision_cleanup_interval', $cleanup_interval );
+            update_option( 'revision_cleanup_pages', $revision_buster_selected_pages );
+            update_option( 'revision_cleanup_revisions_to_keep', absint($revision_buster_revisions_to_keep) );
+            update_option( 'revision_cleanup_interval', $revision_buster_cleanup_interval );
 
             $this->clear_scheduled_revision_cleanup();
-            wp_schedule_event( time(), $cleanup_interval, 'rb_run_revision_cleanup_cron' );
+            wp_schedule_event( time(), $revision_buster_cleanup_interval, 'rb_run_revision_cleanup_cron' );
 
             echo '<div class="updated"><p>' . esc_html__( 'Settings saved!', 'revision-buster' ) . '</p></div>';
         }
 
         // Handle delete all revisions request.
-        if ( ! empty( $delete_all_revisions ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
+        if ( ! empty( $revision_buster_delete_all_revisions ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
             $this->delete_all_revisions();
             echo '<div class="updated"><p>' . esc_html__( 'All revisions deleted!', 'revision-buster' ) . '</p></div>';
         }
 
         // Handle delete single revisions request.
-        if ( ! empty( $delete_single_revision ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
-            $single_post_id = filter_input( INPUT_POST, 'single_post_id', FILTER_VALIDATE_INT );
+        if ( ! empty( $revision_buster_delete_single_revision ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
+            $revision_buster_single_post_id = filter_input( INPUT_POST, 'single_post_id', FILTER_VALIDATE_INT );
 
-            if ( $single_post_id ) {
-                $this->delete_single_post_revisions( $single_post_id );
+            if ( $revision_buster_single_post_id ) {
+                $this->delete_single_post_revisions( $revision_buster_single_post_id );
                 echo '<div class="updated"><p>' . esc_html__( 'Revisions for the selected post/page deleted!', 'revision-buster' ) . '</p></div>';
             }
         }
 
         // Render admin page.
-        $this->render_admin_page( $selected_pages, $revisions_to_keep, $cleanup_interval );
+        $this->render_admin_page( $revision_buster_selected_pages, $revision_buster_revisions_to_keep, $revision_buster_cleanup_interval );
     }
 
     /**
      * Renders the admin settings page.
      *
-     * @param array  $selected_pages An array of post IDs.
-     * @param int    $revisions_to_keep The number of revisions to keep.
-     * @param string $cleanup_interval The cleanup interval.
+     * @param array  $revision_buster_selected_pages An array of post IDs.
+     * @param int    $revision_buster_revisions_to_keep The number of revisions to keep.
+     * @param string $revision_buster_cleanup_interval The cleanup interval.
      *
      * @return void
      */
-    private function render_admin_page( array $selected_pages, int $revisions_to_keep, string $cleanup_interval ): void {
+    private function render_admin_page( array $revision_buster_selected_pages, int $revision_buster_revisions_to_keep, string $revision_buster_cleanup_interval ): void {
     ?>
     <div class="wrap">
         <h1><?php esc_html_e( 'Revision Cleanup Settings', 'revision-buster' ); ?></h1>
@@ -212,9 +212,9 @@ class RemoveRevisions {
             <h2><?php esc_html_e( 'Delete Revisions for a Single Post/Page', 'revision-buster' ); ?></h2>
             <select name="single_post_id" style="width: 100%;">
                 <option value=""><?php esc_html_e( 'Select a Post/Page', 'revision-buster' ); ?></option>
-                <?php foreach ( $this->all_posts as $single_post ) { ?>
-                    <option value="<?php echo esc_attr( $single_post ); ?>">
-                        <?php echo esc_html( get_the_title( $single_post ) ); ?>
+                <?php foreach ( $this->revision_buster_reall_posts as $revision_buster_single_post ) { ?>
+                    <option value="<?php echo esc_attr( $revision_buster_single_post ); ?>">
+                        <?php echo esc_html( get_the_title( $revision_buster_single_post ) ); ?>
                     </option>
                 <?php } ?>
             </select>
@@ -223,16 +223,16 @@ class RemoveRevisions {
             </p>
 
             <h2><?php esc_html_e( 'Number of Revisions to Keep', 'revision-buster' ); ?></h2>
-            <input type="number" name="revisions_to_keep" value="<?php echo esc_attr( $revisions_to_keep ); ?>" min="0">
+            <input type="number" name="revisions_to_keep" value="<?php echo esc_attr( $revision_buster_revisions_to_keep ); ?>" min="0">
 
             <h2><?php esc_html_e( 'Cleanup Interval', 'revision-buster' ); ?></h2>
             <p><?php esc_html_e( 'Choose the frequency of the cleanup.', 'revision-buster' ); ?></p>
             <select name="cleanup_interval">
-                <option value="hourly" <?php selected( $cleanup_interval, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'revision-buster' ); ?></option>
-                <option value="daily" <?php selected( $cleanup_interval, 'daily' ); ?>><?php esc_html_e( 'Daily', 'revision-buster' ); ?></option>
-                <option value="weekly" <?php selected( $cleanup_interval, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'revision-buster' ); ?></option>
-                <option value="monthly" <?php selected( $cleanup_interval, 'monthly' ); ?>><?php esc_html_e( 'Monthly', 'revision-buster' ); ?></option>
-                <option value="yearly" <?php selected( $cleanup_interval, 'yearly' ); ?>><?php esc_html_e( 'Yearly', 'revision-buster' ); ?></option>
+                <option value="hourly" <?php selected( $revision_buster_cleanup_interval, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'revision-buster' ); ?></option>
+                <option value="daily" <?php selected( $revision_buster_cleanup_interval, 'daily' ); ?>><?php esc_html_e( 'Daily', 'revision-buster' ); ?></option>
+                <option value="weekly" <?php selected( $revision_buster_cleanup_interval, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'revision-buster' ); ?></option>
+                <option value="monthly" <?php selected( $revision_buster_cleanup_interval, 'monthly' ); ?>><?php esc_html_e( 'Monthly', 'revision-buster' ); ?></option>
+                <option value="yearly" <?php selected( $revision_buster_cleanup_interval, 'yearly' ); ?>><?php esc_html_e( 'Yearly', 'revision-buster' ); ?></option>
             </select>
 
             <p><input type="submit" name="revision_cleanup_submit" class="button button-primary" value="<?php esc_attr_e( 'Save Settings', 'revision-buster' ); ?>"></p>
@@ -256,11 +256,11 @@ class RemoveRevisions {
      * @return void
      */
     public function delete_all_revisions(): void {
-        global $wpdb;
+        global $revision_buster_wpdb;
 
-        $wpdb->query(
+        $revision_buster_wpdb->query(
             "
-            DELETE FROM $wpdb->posts
+            DELETE FROM $revision_buster_wpdb->posts
             WHERE post_type = 'revision'
             "
         );
@@ -269,21 +269,21 @@ class RemoveRevisions {
     /**
      * Deletes all revisions for a single post or page.
      *
-     * @param int $post_id The ID of the post or page.
+     * @param int $revision_buster_post_id The ID of the post or page.
      *
      * @return void
      */
-    public function delete_single_post_revisions( int $post_id ): void {
-        global $wpdb;
+    public function delete_single_post_revisions( int $revision_buster_post_id ): void {
+        global $revision_buster_wpdb;
 
-        $wpdb->query(
-            $wpdb->prepare(
+        $revision_buster_wpdb->query(
+            $revision_buster_wpdb->prepare(
                 "
-                DELETE FROM $wpdb->posts
+                DELETE FROM $revision_buster_wpdb->posts
                 WHERE post_type = 'revision'
                 AND post_parent = %d
                 ",
-                $post_id
+                $revision_buster_post_id
             )
         );
     }
@@ -294,9 +294,9 @@ class RemoveRevisions {
      * @return void
      */
     public function clear_scheduled_revision_cleanup(): void {
-        $timestamp = wp_next_scheduled( 'rb_run_revision_cleanup_cron' );
-        if ( $timestamp ) {
-            wp_unschedule_event( $timestamp, 'rb_run_revision_cleanup_cron' );
+        $revision_buster_timestamp = wp_next_scheduled( 'rb_run_revision_cleanup_cron' );
+        if ( $revision_buster_timestamp ) {
+            wp_unschedule_event( $revision_buster_timestamp, 'rb_run_revision_cleanup_cron' );
         }
     }
 
@@ -306,43 +306,43 @@ class RemoveRevisions {
      * @return void
      */
     public function revision_buster_run_revision_cleanup(): void {
-        $selected_pages    = get_option( 'revision_cleanup_pages', [] );
-        $revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
+        $revision_buster_selected_pages    = get_option( 'revision_cleanup_pages', [] );
+        $revision_buster_revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
 
-        foreach ( $selected_pages as $post_id ) {
-            $this->delete_revisions_for_post( $post_id, $revisions_to_keep );
+        foreach ( $revision_buster_selected_pages as $revision_buster_post_id ) {
+            $this->delete_revisions_for_post( $revision_buster_post_id, $revision_buster_revisions_to_keep );
         }
     }
 
     /**
      * Deletes revisions for a single post, keeping the specified number of revisions.
      *
-     * @param int $post_id The ID of the post.
-     * @param int $revisions_to_keep The number of revisions to keep.
+     * @param int $revision_buster_post_id The ID of the post.
+     * @param int $revision_buster_revisions_to_keep The number of revisions to keep.
      *
      * @return void
      */
-    private function delete_revisions_for_post( int $post_id, int $revisions_to_keep ): void {
-        global $wpdb;
+    private function delete_revisions_for_post( int $revision_buster_post_id, int $revision_buster_revisions_to_keep ): void {
+        global $revision_buster_wpdb;
 
-        $revisions = $wpdb->get_results(
-            $wpdb->prepare(
+        $revision_buster_revisions = $revision_buster_wpdb->get_results(
+            $revision_buster_wpdb->prepare(
                 "
-                SELECT ID FROM $wpdb->posts
+                SELECT ID FROM $revision_buster_wpdb->posts
                 WHERE post_type = 'revision'
                 AND post_parent = %d
                 ORDER BY post_date DESC
                 ",
-                $post_id
+                $revision_buster_post_id
             ),
             ARRAY_A
         );
 
-        if ( count( $revisions ) > $revisions_to_keep ) {
-            $revisions_to_delete = array_slice( $revisions, $revisions_to_keep );
+        if ( count( $revision_buster_revisions ) > $revision_buster_revisions_to_keep ) {
+            $revision_buster_revisions_to_delete = array_slice( $revision_buster_revisions, $revision_buster_revisions_to_keep );
 
-            foreach ( $revisions_to_delete as $revision ) {
-                wp_delete_post( $revision['ID'], true );
+            foreach ( $revision_buster_revisions_to_delete as $revision_buster_revision ) {
+                wp_delete_post( $revision_buster_revision['ID'], true );
             }
         }
     }
