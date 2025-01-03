@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Revision Buster
- * Plugin URI: https://github.com/HILAYTRIVEDI/
+ * Plugin URI: https://github.com/HILAYTRIVEDI/revision-buster
  * Description: A powerful plugin to clean up WordPress post and page revisions, with scheduling and custom cleanup options.
  * Version: 1.0.0
  * Author: Hilay Trivedi
