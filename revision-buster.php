@@ -44,10 +44,10 @@ require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-revision-buster.php';
 
 // Initialize the plugin.
 function revision_buster_init() {
-    $rb_class_assets_instance = new Assets();
+    $rb_class_assets_instance = new \RevisionBuster\Assets();
 
-    $rb_class_instance = new RemoveRevisions();
-    $rb_class_instance->rb_setup_hooks();
+    $rb_class_instance = new \RevisionBuster\RemoveRevisions();
+    $rb_class_instance->revision_buster_setup_hooks();
 }
 
 add_action( 'plugins_loaded', 'revision_buster_init' );

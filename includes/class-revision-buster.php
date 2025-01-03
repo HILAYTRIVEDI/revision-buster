@@ -5,6 +5,7 @@
  * @package RevisionBuster
  */
 
+namespace RevisionBuster;
 
 /**
  * Class RemoveRevisions
@@ -23,8 +24,8 @@ class RemoveRevisions {
      * Fetches all posts and sets up hooks.
      */
     public function __construct() {
-        $this->rb_fetch_all_posts();
-        $this->rb_setup_hooks();
+        $this->revision_buster_fetch_all_posts();
+        $this->revision_buster_setup_hooks();
     }
 
     /**
@@ -32,7 +33,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    private function rb_fetch_all_posts(): void {
+    private function revision_buster_fetch_all_posts(): void {
 
         // Get the cached posts of current site
         $cached_posts = get_transient( 'all_posts_cache' );
@@ -78,7 +79,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function rb_invalidate_cache_on_post_update(): void {
+    public function revision_buster_invalidate_cache_on_post_update(): void {
         delete_transient( 'all_posts_cache' );
     }
 
@@ -87,16 +88,16 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function rb_setup_hooks(): void {
-        add_action( 'admin_menu', [ $this, 'rb_revision_cleanup_admin_menu' ] );
-        add_action( 'rb_run_revision_cleanup_cron', [ $this, 'rb_run_revision_cleanup' ] );
+    public function revision_buster_setup_hooks(): void {
+        add_action( 'admin_menu', [ $this, 'revision_buster_revision_cleanup_admin_menu' ] );
+        add_action( 'revision_buster_run_revision_cleanup_cron', [ $this, 'revision_buster_run_revision_cleanup' ] );
 
         // Invalidate cache on post save or delete.
-        add_action( 'save_post', [ $this, 'rb_invalidate_cache_on_post_update' ] );
-        add_action( 'delete_post', [ $this, 'rb_invalidate_cache_on_post_update' ] );
+        add_action( 'save_post', [ $this, 'revision_buster_invalidate_cache_on_post_update' ] );
+        add_action( 'delete_post', [ $this, 'revision_buster_invalidate_cache_on_post_update' ] );
 
         // Add monthly and yearly schedule
-        add_filter( 'cron_schedules', [ $this, 'rb_add_cron_interval' ] );
+        add_filter( 'cron_schedules', [ $this, 'revision_buster_add_cron_interval' ] );
     }
 
     /**
@@ -105,7 +106,7 @@ class RemoveRevisions {
      * @param array $schedules
      * @return array
      */
-    public function rb_add_cron_interval( $schedules ){
+    public function revision_buster_add_cron_interval( $schedules ){
         $schedules['monthly'] = array(
             'interval' => 30 * DAY_IN_SECONDS,
             'display'  => esc_html__( 'Every Month' , 'revision-buster' ), 
@@ -123,7 +124,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function rb_revision_cleanup_admin_menu(): void {
+    public function revision_buster_revision_cleanup_admin_menu(): void {
         add_menu_page(
             'Revision Cleanup',
             'Revision Cleanup',
@@ -150,16 +151,16 @@ class RemoveRevisions {
         $revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
         $cleanup_interval  = get_option( 'revision_cleanup_interval', 'monthly' );
 
-        $revision_cleanup_submit = rb_filter_input( INPUT_POST, 'revision_cleanup_submit', RB_FILTER_SANITIZE_STRING );
-        $delete_all_revisions    = rb_filter_input( INPUT_POST, 'delete_all_revisions', RB_FILTER_SANITIZE_STRING );
-        $delete_single_revision  = rb_filter_input( INPUT_POST, 'delete_single_revision', RB_FILTER_SANITIZE_STRING );
+        $revision_cleanup_submit = revision_buster_filter_input( INPUT_POST, 'revision_cleanup_submit', RB_FILTER_SANITIZE_STRING );
+        $delete_all_revisions    = revision_buster_filter_input( INPUT_POST, 'delete_all_revisions', RB_FILTER_SANITIZE_STRING );
+        $delete_single_revision  = revision_buster_filter_input( INPUT_POST, 'delete_single_revision', RB_FILTER_SANITIZE_STRING );
 
         // Handle form submission.
         if ( ! empty( $revision_cleanup_submit ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
             // Sanitize input fields.
-            $selected_pages    = rb_filter_input( INPUT_POST, 'selected_pages', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY ) ?: [];
-            $revisions_to_keep = rb_filter_input( INPUT_POST, 'revisions_to_keep', FILTER_VALIDATE_INT );
-            $cleanup_interval  = rb_filter_input( INPUT_POST, 'cleanup_interval', RB_FILTER_SANITIZE_STRING );
+            $selected_pages    = revision_buster_filter_input( INPUT_POST, 'selected_pages', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY ) ?: [];
+            $revisions_to_keep = revision_buster_filter_input( INPUT_POST, 'revisions_to_keep', FILTER_VALIDATE_INT );
+            $cleanup_interval  = revision_buster_filter_input( INPUT_POST, 'cleanup_interval', RB_FILTER_SANITIZE_STRING );
 
             update_option( 'revision_cleanup_pages', $selected_pages );
             update_option( 'revision_cleanup_revisions_to_keep', absint($revisions_to_keep) );
@@ -304,7 +305,7 @@ class RemoveRevisions {
      *
      * @return void
      */
-    public function rb_run_revision_cleanup(): void {
+    public function revision_buster_run_revision_cleanup(): void {
         $selected_pages    = get_option( 'revision_cleanup_pages', [] );
         $revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
 
