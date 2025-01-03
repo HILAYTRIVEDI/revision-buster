@@ -1,12 +1,12 @@
 <?php
 /**
  * Plugin Name: Revision Buster
- * Plugin URI: https://example.com/revision-buster
+ * Plugin URI: https://github.com/HILAYTRIVEDI/
  * Description: A powerful plugin to clean up WordPress post and page revisions, with scheduling and custom cleanup options.
  * Version: 1.0.0
  * Author: Hilay Trivedi
  * Co-Author: Sabbir Ahmed
- * Author URI: https://example.com/hilay-trivedi
+ * Author URI: https://github.com/HILAYTRIVEDI/
  * Text Domain: revision-buster
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -44,10 +44,10 @@ require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-revision-buster.php';
 
 // Initialize the plugin.
 function revision_buster_init() {
-    $rb_class_assets_instance = new Assets();
+    $rb_class_assets_instance = new \RevisionBuster\Assets();
 
-    $rb_class_instance = new RemoveRevisions();
-    $rb_class_instance->setup_hooks();
+    $rb_class_instance = new \RevisionBuster\RemoveRevisions();
+    $rb_class_instance->revision_buster_setup_hooks();
 }
 
 add_action( 'plugins_loaded', 'revision_buster_init' );
