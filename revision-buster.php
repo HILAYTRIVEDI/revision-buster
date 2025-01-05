@@ -28,8 +28,8 @@ if( !defined('REVISION_BUSTER_PLUGIN_URL') ):
     define( 'REVISION_BUSTER_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 endif;
 
-if ( !defined( 'RB_FILTER_SANITIZE_STRING' ) ) :
-	define( 'RB_FILTER_SANITIZE_STRING', 'filter-sanitize-string' );
+if ( !defined( 'REVISION_BUSTER__FILTER_SANITIZE_STRING' ) ) :
+	define( 'REVISION_BUSTER__FILTER_SANITIZE_STRING', 'filter-sanitize-string' );
 endif;
 
 
