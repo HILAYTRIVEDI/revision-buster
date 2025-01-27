@@ -12,7 +12,7 @@
  */
 function revision_buster_filter_input( $type, $variable_name, $filter = FILTER_DEFAULT, $options = 0 ) {
     switch ( $filter ) {
-        case RB_FILTER_SANITIZE_STRING:
+        case REVISION_BUSTER__FILTER_SANITIZE_STRING:
             $sanitized_variable = sanitize_text_field( filter_input( $type, $variable_name, FILTER_UNSAFE_RAW, $options ) );
             break;
         default:

@@ -151,16 +151,16 @@ class RemoveRevisions {
         $revision_buster_revisions_to_keep = get_option( 'revision_cleanup_revisions_to_keep', 10 );
         $revision_buster_cleanup_interval  = get_option( 'revision_cleanup_interval', 'monthly' );
 
-        $revision_buster_revision_cleanup_submit = revision_buster_filter_input( INPUT_POST, 'revision_cleanup_submit', RB_FILTER_SANITIZE_STRING );
-        $revision_buster_delete_all_revisions    = revision_buster_filter_input( INPUT_POST, 'delete_all_revisions', RB_FILTER_SANITIZE_STRING );
-        $revision_buster_delete_single_revision  = revision_buster_filter_input( INPUT_POST, 'delete_single_revision', RB_FILTER_SANITIZE_STRING );
+        $revision_buster_revision_cleanup_submit = revision_buster_filter_input( INPUT_POST, 'revision_cleanup_submit', REVISION_BUSTER__FILTER_SANITIZE_STRING );
+        $revision_buster_delete_all_revisions    = revision_buster_filter_input( INPUT_POST, 'delete_all_revisions', REVISION_BUSTER__FILTER_SANITIZE_STRING );
+        $revision_buster_delete_single_revision  = revision_buster_filter_input( INPUT_POST, 'delete_single_revision', REVISION_BUSTER__FILTER_SANITIZE_STRING );
 
         // Handle form submission.
         if ( ! empty( $revision_buster_revision_cleanup_submit ) && check_admin_referer( 'revision_cleanup_nonce' ) ) {
             // Sanitize input fields.
             $revision_buster_selected_pages    = revision_buster_filter_input( INPUT_POST, 'selected_pages', FILTER_SANITIZE_NUMBER_INT, FILTER_REQUIRE_ARRAY ) ?: [];
             $revision_buster_revisions_to_keep = revision_buster_filter_input( INPUT_POST, 'revisions_to_keep', FILTER_VALIDATE_INT );
-            $revision_buster_cleanup_interval  = revision_buster_filter_input( INPUT_POST, 'cleanup_interval', RB_FILTER_SANITIZE_STRING );
+            $revision_buster_cleanup_interval  = revision_buster_filter_input( INPUT_POST, 'cleanup_interval', REVISION_BUSTER__FILTER_SANITIZE_STRING );
 
             update_option( 'revision_cleanup_pages', $revision_buster_selected_pages );
             update_option( 'revision_cleanup_revisions_to_keep', absint($revision_buster_revisions_to_keep) );
