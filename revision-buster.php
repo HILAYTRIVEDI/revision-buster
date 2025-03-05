@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-if( !defined('REVISION_BUSTER_VERSION') ):
+if( ! defined('REVISION_BUSTER_VERSION') ):
     define( 'REVISION_BUSTER_VERSION', '1.0.0' );
 endif;
 
@@ -34,17 +34,23 @@ endif;
 
 
 // Include custom functions.
-require_once REVISION_BUSTER_PLUGIN_DIR . 'helpers/custom-functions.php';
+if ( file_exists( REVISION_BUSTER_PLUGIN_DIR . 'helpers/custom-functions.php' ) ) {
+    require_once REVISION_BUSTER_PLUGIN_DIR . 'helpers/custom-functions.php';
+}
 
 // Incude Assets class.
-require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-assets.php';
+if ( file_exists( REVISION_BUSTER_PLUGIN_DIR . 'includes/class-assets.php' ) ) {
+    require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-assets.php';
+}
 
 // Include the main class.
-require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-revision-buster.php';
+if ( file_exists( REVISION_BUSTER_PLUGIN_DIR . 'includes/class-revision-buster.php' ) ) {
+    require_once REVISION_BUSTER_PLUGIN_DIR . 'includes/class-revision-buster.php';
+}
 
 // Initialize the plugin.
 function revision_buster_init() {
-    $rb_class_assets_instance = new \RevisionBuster\Assets();
+    new \RevisionBuster\Assets();
 
     $rb_class_instance = new \RevisionBuster\RemoveRevisions();
     $rb_class_instance->revision_buster_setup_hooks();

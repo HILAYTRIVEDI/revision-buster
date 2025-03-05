@@ -17,7 +17,7 @@ class RemoveRevisions {
      *
      * @var array
      */
-    private $revision_buster_revision_buster_reall_posts; // Store all posts and pages.
+    private $revision_buster_reall_posts; // Store all posts and pages.
 
     /**
      * Constructor.
@@ -37,7 +37,7 @@ class RemoveRevisions {
 
         // Get the cached posts of current site
         $revision_buster_revision_buster_cached_posts = get_transient( 'revision_buster_all_posts_cache' );
-        
+
         if ( false === $revision_buster_revision_buster_cached_posts ) {
             $this->revision_buster_reall_posts = [];
             $revision_buster_batch_size = 100;
@@ -102,14 +102,14 @@ class RemoveRevisions {
 
     /**
      * Add monthly and yearly schedule
-     * 
+     *
      * @param array $revision_buster_schedules
      * @return array
      */
     public function revision_buster_add_cron_interval( $revision_buster_schedules ){
         $revision_buster_schedules['monthly'] = array(
             'interval' => 30 * DAY_IN_SECONDS,
-            'display'  => esc_html__( 'Every Month' , 'revision-buster' ), 
+            'display'  => esc_html__( 'Every Month' , 'revision-buster' ),
         );
         $revision_buster_schedules['yearly'] = array(
             'interval' => 365 * DAY_IN_SECONDS,
@@ -203,48 +203,67 @@ class RemoveRevisions {
      */
     private function render_admin_page( array $revision_buster_selected_pages, int $revision_buster_revisions_to_keep, string $revision_buster_cleanup_interval ): void {
     ?>
-    <div class="wrap">
+    <div class="wrap revision-cleanup">
         <h1><?php esc_html_e( 'Revision Cleanup Settings', 'revision-buster' ); ?></h1>
-        <form method="POST" action="">
-            <?php wp_nonce_field( 'revision_cleanup_nonce' ); ?>
 
-            <!-- Single post select at top -->
-            <h2><?php esc_html_e( 'Delete Revisions for a Single Post/Page', 'revision-buster' ); ?></h2>
-            <select name="single_post_id" style="width: 100%;">
-                <option value=""><?php esc_html_e( 'Select a Post/Page', 'revision-buster' ); ?></option>
-                <?php foreach ( $this->revision_buster_reall_posts as $revision_buster_single_post ) { ?>
-                    <option value="<?php echo esc_attr( $revision_buster_single_post ); ?>">
-                        <?php echo esc_html( get_the_title( $revision_buster_single_post ) ); ?>
-                    </option>
-                <?php } ?>
-            </select>
-            <p>
-                <input type="submit" name="delete_single_revision" class="button button-secondary" value="<?php esc_attr_e( 'Delete Revisions for Selected Post/Page', 'revision-buster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete revisions for this post/page?', 'revision-buster' ); ?>');">
-            </p>
+        <div class="revision-cleanup-wrapper meta-card">
+            <div class="heading"><h2><?php esc_html_e( 'Select Posts/Pages to Cleanup Revisions', 'revision-buster' ); ?></h2></div>
+            <div class="meta-card-content">
+                <form method="POST">
+                    <?php wp_nonce_field( 'revision_cleanup_nonce' ); ?>
+                    <!-- Single post select at top -->
+                    <select name="single_post_id" style="width: 100%;">
+                        <option value=""><?php esc_html_e( 'Select a Post/Page', 'revision-buster' ); ?></option>
+                        <?php foreach ( $this->revision_buster_reall_posts as $revision_buster_single_post ) { ?>
+                            <option value="<?php echo esc_attr( $revision_buster_single_post ); ?>">
+                                <?php echo esc_html( get_the_title( $revision_buster_single_post ) ); ?>
+                            </option>
+                        <?php } ?>
+                    </select>
+                    <p>
+                        <input type="submit" name="delete_single_revision" class="button button-secondary" value="<?php esc_attr_e( 'Delete Revisions for Selected Post/Page', 'revision-buster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete revisions for this post/page?', 'revision-buster' ); ?>');">
+                    </p>
+                </form>
+            </div>
+        </div>
 
-            <h2><?php esc_html_e( 'Number of Revisions to Keep', 'revision-buster' ); ?></h2>
-            <input type="number" name="revisions_to_keep" value="<?php echo esc_attr( $revision_buster_revisions_to_keep ); ?>" min="0">
+        <div class="revision-cleanup-wrapper-all meta-card">
+            <div class="heading"><h2><?php esc_html_e( 'Delete All Revisions', 'revision-buster' ); ?></h2></div>
+            <div class="meta-card-content">
+                <form method="POST">
+                    <p>
+                        <?php echo esc_html( 'Using this you can delete entire revisions from all post by clicking this below button. Before preoceed make sure you want to do this', 'revision-buster' ); ?>
+                    </p>
+                    <?php wp_nonce_field( 'revision_cleanup_nonce' ); ?>
+                    <p>
+                        <input type="submit" name="delete_all_revisions" class="button button-secondary" value="<?php esc_attr_e( 'Delete All Revisions', 'revision-buster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete all revisions?', 'revision-buster' ); ?>');">
+                    </p>
+                </form>
+            </div>
+        </div>
 
-            <h2><?php esc_html_e( 'Cleanup Interval', 'revision-buster' ); ?></h2>
-            <p><?php esc_html_e( 'Choose the frequency of the cleanup.', 'revision-buster' ); ?></p>
-            <select name="cleanup_interval">
-                <option value="hourly" <?php selected( $revision_buster_cleanup_interval, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'revision-buster' ); ?></option>
-                <option value="daily" <?php selected( $revision_buster_cleanup_interval, 'daily' ); ?>><?php esc_html_e( 'Daily', 'revision-buster' ); ?></option>
-                <option value="weekly" <?php selected( $revision_buster_cleanup_interval, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'revision-buster' ); ?></option>
-                <option value="monthly" <?php selected( $revision_buster_cleanup_interval, 'monthly' ); ?>><?php esc_html_e( 'Monthly', 'revision-buster' ); ?></option>
-                <option value="yearly" <?php selected( $revision_buster_cleanup_interval, 'yearly' ); ?>><?php esc_html_e( 'Yearly', 'revision-buster' ); ?></option>
-            </select>
+        <div class="revision-cleanup-settings meta-card">
+            <div class="heading"><h2><?php esc_html_e( 'Schedule wise revision cleanup', 'revision-buster' ); ?></h2></div>
+            <div class="meta-card-content">
+                <form method="POST">
+                    <?php wp_nonce_field( 'revision_cleanup_nonce' ); ?>
+                    <h2><?php esc_html_e( 'Number of Revisions to Keep', 'revision-buster' ); ?></h2>
+                    <input type="number" name="revisions_to_keep" value="<?php echo esc_attr( $revision_buster_revisions_to_keep ); ?>" min="0">
 
-            <p><input type="submit" name="revision_cleanup_submit" class="button button-primary" value="<?php esc_attr_e( 'Save Settings', 'revision-buster' ); ?>"></p>
-        </form>
+                    <h2><?php esc_html_e( 'Cleanup Interval', 'revision-buster' ); ?></h2>
+                    <p><?php esc_html_e( 'Choose the frequency of the cleanup.', 'revision-buster' ); ?></p>
+                    <select name="cleanup_interval">
+                        <option value="hourly" <?php selected( $revision_buster_cleanup_interval, 'hourly' ); ?>><?php esc_html_e( 'Hourly', 'revision-buster' ); ?></option>
+                        <option value="daily" <?php selected( $revision_buster_cleanup_interval, 'daily' ); ?>><?php esc_html_e( 'Daily', 'revision-buster' ); ?></option>
+                        <option value="weekly" <?php selected( $revision_buster_cleanup_interval, 'weekly' ); ?>><?php esc_html_e( 'Weekly', 'revision-buster' ); ?></option>
+                        <option value="monthly" <?php selected( $revision_buster_cleanup_interval, 'monthly' ); ?>><?php esc_html_e( 'Monthly', 'revision-buster' ); ?></option>
+                        <option value="yearly" <?php selected( $revision_buster_cleanup_interval, 'yearly' ); ?>><?php esc_html_e( 'Yearly', 'revision-buster' ); ?></option>
+                    </select>
 
-        <form method="POST" action="">
-            <?php wp_nonce_field( 'revision_cleanup_nonce' ); ?>
-            <h2><?php esc_html_e( 'Delete All Revisions', 'revision-buster' ); ?></h2>
-            <p>
-                <input type="submit" name="delete_all_revisions" class="button button-secondary" value="<?php esc_attr_e( 'Delete All Revisions', 'revision-buster' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to delete all revisions?', 'revision-buster' ); ?>');">
-            </p>
-        </form>
+                    <p><input type="submit" name="revision_cleanup_submit" class="button button-primary" value="<?php esc_attr_e( 'Save Settings', 'revision-buster' ); ?>"></p>
+                </form>
+            </div>
+        </div>
     </div>
     <?php
 }
@@ -256,11 +275,11 @@ class RemoveRevisions {
      * @return void
      */
     public function delete_all_revisions(): void {
-        global $revision_buster_wpdb;
+        global $wpdb;
 
-        $revision_buster_wpdb->query(
+        $wpdb->query(
             "
-            DELETE FROM $revision_buster_wpdb->posts
+            DELETE FROM $wpdb->posts
             WHERE post_type = 'revision'
             "
         );
@@ -274,12 +293,12 @@ class RemoveRevisions {
      * @return void
      */
     public function delete_single_post_revisions( int $revision_buster_post_id ): void {
-        global $revision_buster_wpdb;
+        global $wpdb;
 
-        $revision_buster_wpdb->query(
-            $revision_buster_wpdb->prepare(
+        $wpdb->query(
+            $wpdb->prepare(
                 "
-                DELETE FROM $revision_buster_wpdb->posts
+                DELETE FROM $wpdb->posts
                 WHERE post_type = 'revision'
                 AND post_parent = %d
                 ",
@@ -323,12 +342,12 @@ class RemoveRevisions {
      * @return void
      */
     private function delete_revisions_for_post( int $revision_buster_post_id, int $revision_buster_revisions_to_keep ): void {
-        global $revision_buster_wpdb;
+        global $wpdb;
 
-        $revision_buster_revisions = $revision_buster_wpdb->get_results(
-            $revision_buster_wpdb->prepare(
+        $revision_buster_revisions = $wpdb->get_results(
+            $wpdb->prepare(
                 "
-                SELECT ID FROM $revision_buster_wpdb->posts
+                SELECT ID FROM $wpdb->posts
                 WHERE post_type = 'revision'
                 AND post_parent = %d
                 ORDER BY post_date DESC

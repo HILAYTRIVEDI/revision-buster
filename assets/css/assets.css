@@ -8,3 +8,29 @@
     height: 300px !important;
     width: 100%;
 }
+
+.revision-cleanup h1 {
+    margin-bottom: 24px;
+}
+
+.meta-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-sizing: border-box;
+    margin-bottom: 24px;
+    border: 1px solid #e0e0e0;
+}
+
+.meta-card .heading {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.meta-card .heading h2 {
+    margin: 0;
+    padding: 0;
+}
+
+.meta-card-content {
+    padding: 24px;
+}
